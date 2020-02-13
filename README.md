@@ -1,5 +1,7 @@
 # TypeScript 实战
 
+[toc]
+
 ## TS 是什么?
 
 [官网](https://www.tslang.cn/docs/home.html)
@@ -107,6 +109,62 @@ var str = 'foo';
 
 ![](./md-imgs/基础类型.png)
 
+```ts
+// 原始类型
+let bool: boolean = true
+let num: number | undefined | null = 123
+let str: string = 'abc'
+// str = 123
+
+// 数组
+let arr1: number[] = [1, 2, 3]
+let arr2: Array<number | string> = [1, 2, 3, '4']
+
+// 元组
+let tuple: [number, string] = [0, '1']
+// tuple.push(2) // 可以 push
+// console.log(tuple)
+// tuple[2] // 但是获取会报错
+
+// 函数
+let add = (x: number, y: number) => x + y
+let compute: (x: number, y: number) => number
+compute = (a, b) => a + b
+
+// 对象
+let obj: { x: number, y: number } = { x: 1, y: 2 }
+obj.x = 3
+
+// symbol
+let s1: symbol = Symbol()
+let s2 = Symbol()
+// console.log(s1 === s2)
+
+// 所有类型的子类型 undefined, null
+// 一旦指定, 无法再改为其他类型
+let un: undefined = undefined
+let nu: null = null
+num = undefined
+num = null
+
+// void
+let noReturn = () => {}
+
+// any
+let x
+x = 1
+x = []
+x = () => {}
+
+// never
+let error = () => {
+    throw new Error('error')
+}
+let endless = () => {
+    while(true) {}
+}
+```
+
 
 
 ### 枚举类型
@@ -209,4 +267,185 @@ let g1: G = G.b
 let g2: G.a = G.a // G.a 取值只能为 G.a, 直接指定 apple 都不行
 
 ```
+
+## 接口interface
+
+`interface ` 字段定义接口
+
+```ts
+interface O {
+    id: number;
+}
+interface Os {
+    list: O[]
+}
+function render(os: Os) {
+    os.list.filter(item => true);
+}
+
+
+```
+
+### ts 检查
+
+```ts
+// 1.使用对象字面量, 会触发校验
+render({
+    list : [{
+        id: 1,
+        name: 'string'
+    }]
+});
+
+// 2.赋值后, 不会
+const os = {
+    list : [{
+        id: 1,
+        name: 'string' // 多余的字段并不会报错
+    }]
+}
+render(os);
+
+// 3. 字符串索引签名
+// 更改接口 O
+interface O {
+    id: number;
+  	// 表示能兼容其他任意的 key
+  	[propsName: string]: any;
+}
+```
+
+
+
+### 断言
+
+```ts
+// 类型断言, 告知 ts 具体类型, 也不会触发校验 使用 as 
+render({
+    list : [{
+        id: 1,
+        name: 'string'
+    }]
+} as Os);
+
+// 类型断言第二种写法, 不推荐 <Os>
+render(<Os>{
+    list : [{
+        id: 1,
+        name: 'string'
+    }]
+});
+```
+
+
+
+### 可选属性
+
+```ts
+interface O {
+    id: number;
+  	age?: number;
+}
+```
+
+
+
+### 只读
+
+表示该属性只能获取, 无法重新赋值
+
+```ts
+interface O {
+    id: number;
+  	readonly age?: number;
+}
+```
+
+
+
+### 定义函数
+
+1. 可选参数, 必须为形参的最末位。
+2. 一旦指定了默认值, 该形参就不可指定为可选
+
+```ts
+// 1. 
+// let add : (x: number, y:number) => number;
+// 2.
+// interface Add {
+  // (x: number, y:number) : number
+// }
+// 3.type 定义类型别名
+type Add  = (x: number, y:number) => number;
+// 注意：以上都只是定义了类型, 并没有真正实现函数
+
+// 实现
+let add: Add = (x, y) => x + y;
+add(1,2);
+
+// error
+function Demo(x?: number = 1){}
+// error
+function Demo(x: number, y?:number, z:number){}
+// 参数个数未知
+function Demo(x: number, ...rest: number[]) {}
+
+```
+
+
+
+#### 混合模式
+
+```ts
+interface Lib {
+  () : void;
+  something: () => void;
+  id: number;
+};
+// 即使全部申明了也会报错, 
+// let lib: Lib = () => {};
+let lib: Lib = (() => {}) as Lib; // 只能用断言抢救一下
+lib.id = 1;
+lib.something = () => {}
+```
+
+#### 函数的重载
+
+**重载**: 一个函数根据传入的参数个数|类型不同,有不同的表现。
+
+`TS`中必须将要重构函数的所有类型都申明一遍
+
+然后用包含了这些声明的函数实现。
+
+```ts
+interface Demo{
+  (a: number) : number;
+}
+interface Demo{
+  (a: string) : string;
+}
+// any 类型包含了声明的类型
+const demo: Demo = function (a: any): any {
+  if (a instanceof Number) return 1;
+  if (a instanceof String) return 'a';
+}
+```
+
+### 继承
+
+```ts
+interface Jonathan {
+  attribute: 'gentry'
+}
+interface Joseph extends Jonathan{
+  run: () => void
+}
+interface Jotaro extends Joseph, Jonathan {
+  invincible: boolean;
+}
+```
+
+
+
+[第二节: Class&高级类型](./readme/02-10~21.md)
 
