@@ -2,7 +2,7 @@
  * @Author: LaoZhang
  * @Date: 2020-02-13 23:56:04
  * @LastEditors  : LaoZhang
- * @LastEditTime : 2020-02-13 23:57:53
+ * @LastEditTime : 2020-02-14 13:49:37
  * @Description: 作用
  * @FilePath: /demo/src/generics.ts
  */
@@ -43,3 +43,39 @@ function logAdvance<T extends Length>(value: T): T {
 logAdvance([1])
 logAdvance('123')
 logAdvance({ length: 3 })
+
+// class Tom<T> {
+//     run(num: T) {
+//         console.log(num);
+//     }
+// }
+// const t = new Tom();
+// // const t = new Tom<number>();
+// t.run('asd')
+
+
+interface Length {
+    length: number;
+}
+class Tom<T extends Length> {
+    run(strs: T) {
+        console.log(strs.length);
+    }
+}
+const t = new Tom();
+t.run('a');
+t.run(['a', 'b', 'c']);
+
+
+
+let arr = [1,null, 'a'];
+let n = null;
+
+// window.onkeydown = (e: KeyboardEvent) => {
+//     e.
+// }
+
+interface API {
+    id: number;
+}
+let api = {} as API;

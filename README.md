@@ -447,5 +447,5 @@ interface Jotaro extends Joseph, Jonathan {
 
 
 
-[第二节: Class&高级类型](./readme/02-10~21.md)
+[第二节: Class&高级类型](./readme/02-10~14.md)
 
